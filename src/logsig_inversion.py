@@ -1,7 +1,7 @@
 import numpy as np
 from tqdm.auto import tqdm
 import copy
-from utils.leadlag import leadlag
+from BuehlerVAE.src.utils.leadlag import leadlag
 from esig import tosig
 
 class Organism:

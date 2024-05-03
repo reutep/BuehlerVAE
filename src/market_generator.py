@@ -5,9 +5,9 @@ from esig import tosig
 from tqdm.auto import tqdm
 from sklearn.preprocessing import MinMaxScaler
 
-from utils.leadlag import leadlag
-from cvae import CVAE
-from rough_bergomi import rough_bergomi
+from BuehlerVAE.src.utils.leadlag import leadlag
+from BuehlerVAE.src.cvae import CVAE
+from BuehlerVAE.src.rough_bergomi import rough_bergomi
 
 class MarketGenerator:
     def __init__(self, ticker, start=datetime.date(2000, 1, 1),
