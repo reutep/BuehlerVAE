@@ -9,10 +9,13 @@ from BuehlerVAE.src.utils.leadlag import leadlag
 from BuehlerVAE.src.cvae import CVAE
 from BuehlerVAE.src.rough_bergomi import rough_bergomi
 
+# own code
+import src.data.make_dataset as mkd
+
 class MarketGenerator:
     def __init__(self, ticker, start=datetime.date(2000, 1, 1),
                  end=datetime.date(2019, 1, 1), freq="M",
-                 sig_order=4, rough_bergomi=None):
+                 sig_order=4, rough_bergomi=None, own_params=None, method="Kou_Jump_Diffusion"):
 
         self.ticker = ticker
         self.start = start
@@ -22,6 +25,8 @@ class MarketGenerator:
 
         if rough_bergomi:
              self._load_rough_bergomi(rough_bergomi)
+        elif own_params:
+            self._load_own_data(own_params, method)
         else:
             self._load_data()
 
@@ -37,6 +42,15 @@ class MarketGenerator:
 
         self.windows = [leadlag(path) for path in paths]
 
+    def _load_own_data(self, params, method):
+        grid_points_dict = {"M": 28, "W": 5, "Y": 252}
+        grid_points = grid_points_dict[self.freq]
+        params["T"] = grid_points / grid_points_dict["Y"]
+        params["dt"] = 1/grid_points_dict["Y"]
+        kou_loader = mkd.DataLoader(method=method, params=params)
+        paths, time = kou_loader.create_dataset(output_type="np.ndarray")
+
+        self.windows = [leadlag(path) for path in paths.T]
 
     def _load_data(self):
         try:

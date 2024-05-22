@@ -97,4 +97,4 @@ def rough_bergomi(grid_points, M, H, T,rho,xi0,nu,S0):
         log_stock[:,i+1]=log_stock[:,i]-0.5*Variance[:,i]*time_increment+np.power(Variance[:,i],0.5)*brownian_increments[:,i]
 
 
-    return np.exp(log_stock)
+    return np.exp(log_stock) # Output is of shape (M, grid_points)
