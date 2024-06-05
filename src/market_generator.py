@@ -13,15 +13,17 @@ from BuehlerVAE.src.rough_bergomi import rough_bergomi
 import src.data.make_dataset as mkd
 
 class MarketGenerator:
-    def __init__(self, ticker, start=datetime.date(2000, 1, 1),
-                 end=datetime.date(2019, 1, 1), freq="M",
-                 sig_order=4, rough_bergomi=None, own_params=None, method="Kou_Jump_Diffusion"):
+    def __init__(
+        self, ticker, start=datetime.date(2000, 1, 1), end=datetime.date(2019, 1, 1), freq="M",
+        sig_order=4, rough_bergomi=None, own_params=None, method="Kou_Jump_Diffusion", seed = None
+    ):
 
         self.ticker = ticker
         self.start = start
         self.end = end
         self.freq = freq
         self.order = sig_order
+        self.seed = seed
 
         if rough_bergomi:
              self._load_rough_bergomi(rough_bergomi)
@@ -31,24 +33,24 @@ class MarketGenerator:
             self._load_data()
 
         self._build_dataset()
-        self.generator = CVAE(n_latent=8, alpha=0.003)
+        self.generator = CVAE(n_latent=8, alpha=0.003, seed=self.seed)
 
     def _load_rough_bergomi(self, params):
-        grid_points_dict = {"M": 28, "W": 5, "Y": 252}
+        grid_points_dict = {"M": 21, "W": 5, "Y": 252}
         grid_points = grid_points_dict[self.freq]
         params["T"] = grid_points / grid_points_dict["Y"]
 
-        paths = rough_bergomi(grid_points, **params)
+        paths = rough_bergomi(grid_points, **params, seed=self.seed)
 
         self.windows = [leadlag(path) for path in paths]
 
     def _load_own_data(self, params, method):
-        grid_points_dict = {"M": 28, "W": 5, "Y": 252}
+        grid_points_dict = {"M": 21, "W": 5, "Y": 252}
         grid_points = grid_points_dict[self.freq]
         params["T"] = grid_points / grid_points_dict["Y"]
-        params["dt"] = 1/grid_points_dict["Y"]
-        kou_loader = mkd.DataLoader(method=method, params=params)
-        paths, time = kou_loader.create_dataset(output_type="np.ndarray")
+        params["n_points"] = grid_points + 1
+        dataLoader = mkd.DataLoader(method=method, params=params, seed=self.seed)
+        paths, time = dataLoader.create_dataset(output_type="np.ndarray")
 
         self.windows = [leadlag(path) for path in paths.T]
 

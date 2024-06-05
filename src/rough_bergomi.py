@@ -1,8 +1,7 @@
 import numpy as np
 import scipy.special as special
 
-
-def volterra_BM_path_chol(grid_points, M, H, T,rho):
+def volterra_BM_path_chol(grid_points, M, H, T,rho, seed=None):
     """Volterra BM path Cholesky.
 
     Parameters
@@ -16,6 +15,7 @@ def volterra_BM_path_chol(grid_points, M, H, T,rho):
     M : int
         # paths to simulate
     """
+    np.random.seed(seed)
 
     assert 0<H<1.0
 
@@ -67,7 +67,7 @@ def volterra_BM_path_chol(grid_points, M, H, T,rho):
     return V, W
 
 
-def rough_bergomi(grid_points, M, H, T,rho,xi0,nu,S0):
+def rough_bergomi(grid_points, M, H, T,rho,xi0,nu,S0, seed=None):
     """Volterra BM path Cholesky.
 
     Parameters
@@ -85,7 +85,7 @@ def rough_bergomi(grid_points, M, H, T,rho,xi0,nu,S0):
     """
 
 
-    [V_path,W_path]=volterra_BM_path_chol(grid_points, M, H, T,rho)
+    [V_path,W_path]=volterra_BM_path_chol(grid_points, M, H, T,rho, seed=seed)
 
     time_grid=np.linspace(0,T,grid_points)
     C_H=np.power(2*H*special.gamma(3.0/2.0-H)/special.gamma(H+0.5)/special.gamma(2.0-2.0*H),0.5)

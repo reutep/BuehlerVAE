@@ -7,10 +7,12 @@ import tensorflow as tf
 class CVAE(object):
     """Conditional Variational Auto Encoder (CVAE)."""
 
-    def __init__(self, n_latent, n_hidden=50, alpha=0.2):
+    def __init__(self, n_latent, n_hidden=50, alpha=0.2, seed=None):
         self.n_latent = n_latent
         self.n_hidden = n_hidden
         self.alpha = alpha
+        np.random.seed(seed)
+        tf.set_random_seed(seed)
 
     def lrelu(self, x, alpha=0.3):
         return tf.maximum(x, tf.multiply(x, alpha))
