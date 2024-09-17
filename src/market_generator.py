@@ -47,8 +47,11 @@ class MarketGenerator:
     def _load_own_data(self, params, method):
         grid_points_dict = {"M": 21, "W": 5, "Y": 252}
         grid_points = grid_points_dict[self.freq]
-        params["T"] = grid_points / grid_points_dict["Y"]
         params["n_points"] = grid_points + 1
+        if method == "YFinance":
+            params["split"] = True
+        else:
+            params["T"] = grid_points / grid_points_dict["Y"]
         dataLoader = mkd.DataLoader(method=method, params=params, seed=self.seed)
         paths, time = dataLoader.create_dataset(output_type="np.ndarray")
 
